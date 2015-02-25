@@ -14,32 +14,34 @@ import java.nio.file.Paths;
  */
 public class Walk {
     public static void main(String[] args) {
-        Path input = Paths.get(args[0]);
-        Path output = Paths.get(args[1]);
+        if (args.length == 2) {
+            Path input = Paths.get(args[0]);
+            Path output = Paths.get(args[1]);
 
-        try (BufferedReader reader = Files.newBufferedReader(input, Charset.forName("UTF-8"));
-             BufferedWriter writer = Files.newBufferedWriter(output, Charset.forName("UTF-8"))) {
-            String aux;
+            try (BufferedReader reader = Files.newBufferedReader(input, Charset.forName("UTF-8"));
+                 BufferedWriter writer = Files.newBufferedWriter(output, Charset.forName("UTF-8"))) {
+                String aux;
 
-            while ((aux = reader.readLine()) != null) {
-                int hash = 0;
+                while ((aux = reader.readLine()) != null) {
+                    int hash = 0;
 
-                try (FileChannel channel = new FileInputStream(aux).getChannel()) {
-                    MappedByteBuffer byteBuffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
-                    hash = fnvHash(byteBuffer);
-                } catch (Exception e) {
+                    try (FileChannel channel = new FileInputStream(aux).getChannel()) {
+                        MappedByteBuffer byteBuffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
+                        hash = fnvHash(byteBuffer);
+                    } catch (Exception e) {
+                    }
+
+                    writer.write(String.format("%08x", hash) + " " + aux + System.getProperty("line.separator"));
+                    writer.flush();
                 }
 
-                writer.write(String.format("%08x", hash) + " " + aux + System.getProperty("line.separator"));
-                writer.flush();
+            } catch (NoSuchFileException e) {
+                System.err.println("File " + "\"" + args[0] + "\"" + " not found");
+            } catch (UnsupportedEncodingException e) {
+                System.err.println("Non UTF-8 file");
+            } catch (IOException e) {
+                System.err.println(e.getMessage());
             }
-
-        } catch (NoSuchFileException e) {
-            System.err.println("File " + "\"" + args[0] + "\"" + " not found");
-        } catch (UnsupportedEncodingException e) {
-            System.err.println("Input file's encoding is not UTF-8, check it and try again");
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
         }
     }
 
