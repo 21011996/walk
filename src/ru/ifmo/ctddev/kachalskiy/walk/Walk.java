@@ -36,11 +36,11 @@ public class Walk {
                 }
 
             } catch (NoSuchFileException e) {
-                System.err.println("File " + "\"" + args[0] + "\"" + " not found");
+                //System.err.println("File " + "\"" + args[0] + "\"" + " not found");
             } catch (UnsupportedEncodingException e) {
-                System.err.println("Non UTF-8 file");
+                //System.err.println("Non UTF-8 file");
             } catch (IOException e) {
-                System.err.println(e.getMessage());
+                //System.err.println(e.getMessage());
             }
         }
     }
